@@ -1,0 +1,2 @@
+const getData = () => {};
+const sendData = () => {};

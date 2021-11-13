@@ -1,0 +1,9 @@
+const deactivationFilterForm = () => {};
+const activationFilterForm = () => {};
+const showFilteredPicturesList = () => {};
+const onEveryGettingPicture = () => {};
+const showFullSizePicture = () => {};
+const showComments = () => {};
+const onShowComments = () => {};
+const onFullSizePicture = () => {};
+const closeFullSizePicture = () => {};
