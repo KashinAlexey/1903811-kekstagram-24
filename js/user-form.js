@@ -43,7 +43,9 @@ const validationUserForm = (cb) => {
   const onSubmitUserForm = () => {
     console.log('onSubmitUserForm');
 
-    cb(); // sendData();
+
+    const dataToServer = 0;
+    cb(dataToServer); // sendData();
   };
 
   inputComments();
@@ -70,4 +72,4 @@ const loadingNewUserPhoto = (cb) => {
   cb(); // activationUserForm();
 };
 
-export { loadingNewUserPhoto, activationUserForm, validationUserForm };
+export { loadingNewUserPhoto, activationUserForm, validationUserForm, setDefaulParameters };

@@ -1,21 +1,40 @@
+import { GET_URL, SEND_URL } from './constants.js';
+
 const getData = (activationFilterForm, showGetDataErrMsg) => {
-  console.log('getData');
+  fetch(GET_URL)
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      }
 
-  // Success
-  activationFilterForm();
-
-  // Error
-  showGetDataErrMsg();
+      throw new Error();
+    })
+    .then((datafromServer) => {
+      activationFilterForm(datafromServer);
+    })
+    .catch(() => {
+      showGetDataErrMsg();
+    });
 };
 
-const sendData = (showSendDataSuccessMsg, showSendDataErrMsg) => {
-  console.log('sendData');
+const sendData = (body, showSendDataSuccessMsg, showSendDataErrMsg) => {
+  fetch(SEND_URL,
+    {
+      method: 'POST',
+      body,
+    },
+  )
+    .then((response) => {
+      if (response.ok) {
+        showSendDataSuccessMsg();
+        return;
+      }
 
-  // Success
-  showSendDataSuccessMsg();
-
-  // Error
-  showSendDataErrMsg();
+      throw new Error();
+    })
+    .catch(() => {
+      showSendDataErrMsg();
+    });
 };
 
 export { getData, sendData };
