@@ -1,29 +1,42 @@
-const showGetDataErrMsg = () => {
-  console.log('showGetDataErrMsg');
-};
-const onGetDataErrMsg = () => {
-  console.log('onGetDataErrMsg');
-};
 const closeGetDataErrMsg = () => {
   console.log('closeGetDataErrMsg');
 };
+const onGetDataErrMsg = () => {
+  console.log('onGetDataErrMsg');
 
-const showSendDataErrMsg = () => {
-  console.log('showSendDataErrMsg');
+  closeGetDataErrMsg();
 };
-const onSendDataErrMsg = () => {
-  console.log('onSendDataErrMsg');
+const showGetDataErrMsg = () => {
+  console.log('showGetDataErrMsg');
+
+  onGetDataErrMsg();
+
 };
+
+
 const closeSendDataErrMsg = () => {
   console.log('closeSendDataErrMsg');
 };
+const onSendDataErrMsg = () => {
+  console.log('onSendDataErrMsg');
+  closeSendDataErrMsg();
+};
+const showSendDataErrMsg = () => {
+  console.log('showSendDataErrMsg');
 
-const showSendDataSuccessMsg = () => {
-  console.log('showSendDataSuccessMsg');
+  onSendDataErrMsg();
 };
-const onSendDataSuccessMsg = () => {
-  console.log('onSendDataSuccessMsg');
-};
+
 const closeSendDataSuccessMsg = () => {
   console.log('closeSendDataSuccessMsg');
 };
+const onSendDataSuccessMsg = () => {
+  console.log('onSendDataSuccessMsg');
+  closeSendDataSuccessMsg();
+};
+const showSendDataSuccessMsg = () => {
+  console.log('showSendDataSuccessMsg');
+  onSendDataSuccessMsg();
+};
+
+export { showGetDataErrMsg, showSendDataErrMsg, showSendDataSuccessMsg };
