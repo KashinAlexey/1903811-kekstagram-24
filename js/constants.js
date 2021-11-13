@@ -2,7 +2,12 @@
 const SEND_URL = 'https://24.javascript.pages.academy/kekstagram';
 const GET_URL = 'https://24.javascript.pages.academy/kekstagram/data';
 
-export { SEND_URL, GET_URL };
+// Параметры масштаба
+const STEP = 25;
+const MIN_SCALE_VALUE = 0;
+const MAX_SCALE_VALUE = 100;
+
+export { SEND_URL, GET_URL, STEP, MIN_SCALE_VALUE, MAX_SCALE_VALUE };
 
 
 /* Get data

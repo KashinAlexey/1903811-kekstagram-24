@@ -26,14 +26,14 @@ const sendData = (body, showSendDataSuccessMsg, showSendDataErrMsg) => {
   )
     .then((response) => {
       if (response.ok) {
-        showSendDataSuccessMsg();
+        //showSendDataSuccessMsg();
         return;
       }
 
       throw new Error();
     })
     .catch(() => {
-      showSendDataErrMsg();
+      //showSendDataErrMsg();
     });
 };
 
