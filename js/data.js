@@ -1,7 +1,4 @@
-import { activationFilterForm } from './filter-form.js';
-import { showGetDataErrMsg, showSendDataErrMsg, showSendDataSuccessMsg } from './message.js';
-
-const getData = () => {
+const getData = (activationFilterForm, showGetDataErrMsg) => {
   console.log('getData');
 
   // Success
@@ -11,7 +8,7 @@ const getData = () => {
   showGetDataErrMsg();
 };
 
-const sendData = () => {
+const sendData = (showSendDataSuccessMsg, showSendDataErrMsg) => {
   console.log('sendData');
 
   // Success

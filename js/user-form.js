@@ -1,4 +1,3 @@
-import { sendData } from './data.js';
 
 const closeUserForm = () => {
   console.log('closeUserForm');
@@ -10,7 +9,7 @@ const setDefaulParameters = () => {
   closeUserForm();
 };
 
-const validationUserForm = () => {
+const validationUserForm = (cb) => {
   console.log('validationUserForm');
 
   const inputComments = () => {
@@ -44,8 +43,7 @@ const validationUserForm = () => {
   const onSubmitUserForm = () => {
     console.log('onSubmitUserForm');
 
-    sendData();
-
+    cb(); // sendData();
   };
 
   inputComments();
@@ -59,17 +57,17 @@ const validationUserForm = () => {
   onSubmitUserForm();
 };
 
-const activationUserForm = () => {
+const activationUserForm = (cb) => {
   console.log('activationUserForm');
 
-  validationUserForm();
+  cb(); // validationUserForm();
 
 };
 
-const loadingNewUserPhoto = () => {
+const loadingNewUserPhoto = (cb) => {
   console.log('loadingNewUserPhoto');
 
-  activationUserForm();
+  cb(); // activationUserForm();
 };
 
-export { loadingNewUserPhoto };
+export { loadingNewUserPhoto, activationUserForm, validationUserForm };

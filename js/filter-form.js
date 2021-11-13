@@ -15,6 +15,7 @@ const showFilteredPicturesList = () => {
 
   onEveryGettingPicture();
 };
+
 const activationFilterForm = () => {
   console.log('activationFilterForm');
 
