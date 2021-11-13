@@ -1,9 +1,27 @@
-const deactivationFilterForm = () => {};
-const activationFilterForm = () => {};
-const showFilteredPicturesList = () => {};
-const onEveryGettingPicture = () => {};
-const showFullSizePicture = () => {};
-const showComments = () => {};
-const onShowComments = () => {};
-const onFullSizePicture = () => {};
-const closeFullSizePicture = () => {};
+const deactivationFilterForm = () => {
+  console.log('deactivationFilterForm');
+};
+const activationFilterForm = () => {
+  console.log('activationFilterForm');
+};
+const showFilteredPicturesList = () => {
+  console.log('showFilteredPicturesList');
+};
+const onEveryGettingPicture = () => {
+  console.log('onEveryGettingPicture');
+};
+const showFullSizePicture = () => {
+  console.log('showFullSizePicture');
+};
+const showComments = () => {
+  console.log('showComments');
+};
+const onShowComments = () => {
+  console.log('onShowComments');
+};
+const onFullSizePicture = () => {
+  console.log('onFullSizePicture');
+};
+const closeFullSizePicture = () => {
+  console.log('closeFullSizePicture');
+};

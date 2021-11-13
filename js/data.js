@@ -1,2 +1,7 @@
-const getData = () => {};
-const sendData = () => {};
+const getData = () => {
+  console.log('getData');
+};
+
+const sendData = () => {
+  console.log('sendData');
+};
