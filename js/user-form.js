@@ -1,5 +1,5 @@
 import { STEP, MIN_SCALE_VALUE, MAX_SCALE_VALUE, Filter } from './constants.js';
-import { loadSlider, setSliderOptions } from './slider.js';
+import { disableSlider, enableSlider, loadSlider, setSliderOptions } from './slider.js';
 // Переменные
 const form = document.querySelector('.img-upload__form');
 const imgUploadInput = document.querySelector('#upload-file');
@@ -14,6 +14,9 @@ const scaleControlInput = imgUploadScale.querySelector('.scale__control--value')
 const imgUploadPreview = document.querySelector('.img-upload__preview').querySelector('img');
 const effectsList = document.querySelector('.effects__list');
 const effectLevelInput = document.querySelector('.effect-level__value');
+const hashTagsInput = document.querySelector('.text__hashtags');
+
+const hashCodeTemplate = /^#\w+/; // TODO Изменить выражение (не работает)
 
 // Функционал модуля
 
@@ -31,6 +34,7 @@ const setDefaulParameters = () => {
   console.log('setDefaulParameters');
   imgUploadPreview.style.transform = `scale(${1.00})`;
   imgUploadPreview.style.filter = '';
+  disableSlider();
 
   //imgUploadPreview.style = `transform: scale(${1.00})`;
 
@@ -43,9 +47,17 @@ const validationUserForm = (cb) => {
   const inputComments = () => {
     console.log('inputComments');
   };
-  const inputHashTags = () => {
-    console.log('inputHashTags');
+  
+  const onInputHashTags = () => {
+    if (!hashCodeTemplate.test(hashTagsInput.value)) {
+      hashTagsInput.setCustomValidity('Не верный формат хэш-тэга');
+    } else {
+      hashTagsInput.setCustomValidity('');
+    }
+
+    hashTagsInput.reportValidity();
   };
+  hashTagsInput.addEventListener('input', onInputHashTags); // OK
 
   const setDefaultEffectIntensity = () => {
     imgUploadPreview.style.filter = '';
@@ -84,6 +96,9 @@ const validationUserForm = (cb) => {
 
     if (evt.target.value !== 'none') {
       imgUploadPreview.classList.add(`effects__preview--${evt.target.value}`);
+      enableSlider();
+    } else {
+      disableSlider();
     }
 
     return evt.target.value;
@@ -133,7 +148,7 @@ const validationUserForm = (cb) => {
   setDefaulParameters();
 
   inputComments();
-  inputHashTags();
+  //inputHashTags();
 
   onChoosingEffect();
   setDefaultEffectIntensity();

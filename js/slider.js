@@ -24,7 +24,6 @@ const loadSlider = (callback) => {
   });
 
   slider.noUiSlider.on('update', (values, handle) => {
-    //console.log(values[handle]);
     callback(values[handle]);
   });
 };
@@ -44,5 +43,12 @@ const setSliderOptions = (min, max, step) => {
   });
 };
 
+const disableSlider = () => {
+  slider.setAttribute('disabled', true);
+};
 
-export { loadSlider, setDefaultSliderStart, setSliderOptions };
+const enableSlider =() => {
+  slider.removeAttribute('disabled');
+};
+
+export { loadSlider, setDefaultSliderStart, setSliderOptions, disableSlider, enableSlider };
