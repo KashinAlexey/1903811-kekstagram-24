@@ -11,6 +11,8 @@ const buttonScaleControlSmaller = imgUploadScale.querySelector('.scale__control-
 const buttonScaleControlBigger = imgUploadScale.querySelector('.scale__control--bigger');
 const scaleControlInput = imgUploadScale.querySelector('.scale__control--value');
 const imgUploadPreview = document.querySelector('.img-upload__preview').querySelector('img');
+const effectsList = document.querySelector('.effects__list');
+const effectLevelInput = document.querySelector('.effect-level__value');
 
 // Функционал модуля
 
@@ -26,6 +28,7 @@ const deactivationUserForm = (evt) => {
 
 const setDefaulParameters = () => {
   console.log('setDefaulParameters');
+  imgUploadPreview.style = `transform: scale(${1.00})`;
 
 };
 
@@ -39,9 +42,20 @@ const validationUserForm = (cb) => {
   const inputHashTags = () => {
     console.log('inputHashTags');
   };
-  const choosingEffect = () => {
-    console.log('choosingEffect');
-  };
+
+  const setEffect = (evt) => {
+    if (imgUploadPreview.className) {
+      imgUploadPreview.classList.remove(imgUploadPreview.className);
+    }
+
+    if (evt.target.value !== 'none') {
+      imgUploadPreview.classList.add(`effects__preview--${evt.target.value}`);
+    }
+  }; //OK
+  const onChoosingEffect = () => {
+    effectsList.addEventListener('input', setEffect);
+  }; // OK
+
   const setDefaultEffectIntensity = () => {
     console.log('setDefaultEffectIntensity');
   };
@@ -75,7 +89,7 @@ const validationUserForm = (cb) => {
     buttonReset.addEventListener('click', deactivationUserForm);
     document.addEventListener('keydown', deactivationUserForm);
     setDefaulParameters();
-  };
+  }; // OK
 
   const onSubmitUserForm = () => {
     buttonSubmit.addEventListener('click', (evt) => {
@@ -87,7 +101,7 @@ const validationUserForm = (cb) => {
 
   inputComments();
   inputHashTags();
-  choosingEffect();
+  onChoosingEffect();
   setDefaultEffectIntensity();
   choosingEffectIntensity();
 
