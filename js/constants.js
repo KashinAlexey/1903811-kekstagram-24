@@ -10,6 +10,9 @@ const MAX_SCALE_VALUE = 100;
 // Параметры слайдера
 const SLIDER_START_DEFAULT = 100;
 
+// Длина коментария
+const COMMENT_LENGTH = 140;
+
 // Список значений фильтра
 const Filter = {
   none: {
@@ -44,7 +47,7 @@ const Filter = {
   },
 };
 
-export { SEND_URL, GET_URL, STEP, MIN_SCALE_VALUE, MAX_SCALE_VALUE, SLIDER_START_DEFAULT, Filter };
+export { SEND_URL, GET_URL, STEP, MIN_SCALE_VALUE, MAX_SCALE_VALUE, SLIDER_START_DEFAULT, Filter, COMMENT_LENGTH };
 
 
 /* Get data

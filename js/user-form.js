@@ -1,4 +1,4 @@
-import { STEP, MIN_SCALE_VALUE, MAX_SCALE_VALUE, Filter } from './constants.js';
+import { STEP, MIN_SCALE_VALUE, MAX_SCALE_VALUE, Filter, COMMENT_LENGTH } from './constants.js';
 import { disableSlider, enableSlider, loadSlider, setSliderOptions, destroySlider } from './slider.js';
 
 // Переменные
@@ -16,6 +16,7 @@ const imgUploadPreview = document.querySelector('.img-upload__preview').querySel
 const effectsList = document.querySelector('.effects__list');
 const effectLevelInput = document.querySelector('.effect-level__value');
 const hashTagsInput = document.querySelector('.text__hashtags');
+const commentInput = document.querySelector('.text__description');
 
 const hashCodeTemplate = /([#][a-zA-Z0-9]{1,19}[ ]*)+/; //new RegExp('([#][a-zA-Z0-9]{0,18})+(\\W|$)', 'g'); // /([#][a-zA-Z0-9]{0,18})+(\W|$)/;
 
@@ -23,7 +24,7 @@ const hashCodeTemplate = /([#][a-zA-Z0-9]{1,19}[ ]*)+/; //new RegExp('([#][a-zA-
 
 const deactivationUserForm = (evt) => {
   // Внутренняя логика
-  if ((!document.activeElement.classList.contains('text__hashtags')) && (evt.key === 'Escape' || evt.type === 'click')) {
+  if (!document.activeElement.classList.contains('text__hashtags') && !document.activeElement.classList.contains('text__description') &&(evt.key === 'Escape' || evt.type === 'click')) {
     destroySlider();
     imgUplodOverlay.classList.add('hidden');
     htmlBody.classList.remove('modal-open');
@@ -44,9 +45,17 @@ const validationUserForm = (cb) => {
   let currentEffect = 'none';
   let heshTagInputArray;
 
-  const inputComments = () => {
-    console.log('inputComments');
+  const onInputComments = () => {
+    if (commentInput.value.length > COMMENT_LENGTH) {
+      commentInput.setCustomValidity('Длина коментария не более 140 символов');
+    } else {
+      commentInput.setCustomValidity('');
+    }
+
+    commentInput.reportValidity();
   };
+  commentInput.addEventListener('input', onInputComments);
+
 
   const onInputHashTags = () => {
 
@@ -192,7 +201,7 @@ const validationUserForm = (cb) => {
 
   setDefaulParameters();
 
-  inputComments();
+  //inputComments();
   //inputHashTags();
 
   onChoosingEffect();
