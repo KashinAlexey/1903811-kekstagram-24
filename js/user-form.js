@@ -17,13 +17,13 @@ const effectsList = document.querySelector('.effects__list');
 const effectLevelInput = document.querySelector('.effect-level__value');
 const hashTagsInput = document.querySelector('.text__hashtags');
 
-const hashCodeTemplate = /^#\w+/; // TODO Изменить выражение (не работает)
+const hashCodeTemplate = /([#][a-zA-Z0-9]{1,19}[ ]*)+/; //new RegExp('([#][a-zA-Z0-9]{0,18})+(\\W|$)', 'g'); // /([#][a-zA-Z0-9]{0,18})+(\W|$)/;
 
 // Функционал модуля
 
 const deactivationUserForm = (evt) => {
   // Внутренняя логика
-  if (evt.key === 'Escape' || evt.type === 'click') {
+  if ((!document.activeElement.classList.contains('text__hashtags')) && (evt.key === 'Escape' || evt.type === 'click')) {
     destroySlider();
     imgUplodOverlay.classList.add('hidden');
     htmlBody.classList.remove('modal-open');
@@ -37,15 +37,12 @@ const setDefaulParameters = () => {
   imgUploadPreview.style.transform = `scale(${1.00})`;
   imgUploadPreview.style.filter = '';
   disableSlider();
-
-  //imgUploadPreview.style = `transform: scale(${1.00})`;
-
 };
 
 const validationUserForm = (cb) => {
   console.log('validationUserForm');
   let currentEffect = 'none';
-  let heshTagInputArray = [];
+  let heshTagInputArray;
 
   const inputComments = () => {
     console.log('inputComments');
@@ -53,16 +50,52 @@ const validationUserForm = (cb) => {
 
   const onInputHashTags = () => {
 
-    heshTagInputArray = hashCodeTemplate.exec(hashTagsInput.value) || [];
+    heshTagInputArray = hashCodeTemplate.exec(hashTagsInput.value);
 
-    if (!(heshTagInputArray[0] === undefined)) {
-      heshTagInputArray[0].length === hashTagsInput.value.length ? hashTagsInput.setCustomValidity('') : hashTagsInput.setCustomValidity('Не верный формат хэш-тэга');
-    } else {
+    try {
+      if (hashTagsInput.value.match(/[#]/g).length <= 5) {
+        if (!(heshTagInputArray === undefined || heshTagInputArray === null)) {
+          heshTagInputArray[0].length === hashTagsInput.value.length ? hashTagsInput.setCustomValidity('') : hashTagsInput.setCustomValidity('Не верный формат хэш-тэга');
+        } else {
+          hashTagsInput.setCustomValidity('Не верный формат хэш-тэга');
+        }
+      } else {
+        hashTagsInput.setCustomValidity('Больше 5 хеш-тегов нельзя!');
+      }
+    } catch (error) {
       hashTagsInput.setCustomValidity('Не верный формат хэш-тэга');
     }
 
+    const arrayOfStrings = hashTagsInput.value.split(' ');
+
+    arrayOfStrings.forEach((arr) => {
+
+      let vol = 0;
+      if (arr !== '') {
+        for (let count = 0; count < arrayOfStrings.length; count ++) {
+          if (arrayOfStrings[count] === arr) {
+            vol++;
+          }
+        }
+
+        if (vol > 1) {
+          hashTagsInput.setCustomValidity('Повторяться нельзя');
+        }
+      } else {
+        for (let count = 0; count < arrayOfStrings.length; count ++) {
+          if (arrayOfStrings[count] === arr) {
+            vol++;
+          }
+        }
+
+        if (vol > 1) {
+          hashTagsInput.setCustomValidity('Одного пробела достаточно');
+        }
+      }
+    });
+
     hashTagsInput.reportValidity();
-  };
+  }; // OK
   hashTagsInput.addEventListener('input', onInputHashTags); // OK
 
   const setDefaultEffectIntensity = () => {
@@ -152,7 +185,8 @@ const validationUserForm = (cb) => {
       const dataToServer = new FormData(evt.target);
 
       console.log(dataToServer);
-      cb(dataToServer); // sendData();
+      //sendData(dataToServer);
+      //cb(dataToServer); // sendData();
     });
   }; // OK
 
@@ -171,7 +205,6 @@ const validationUserForm = (cb) => {
 };
 
 const activationUserForm = (cb) => {
-  console.log(11);
   imgUplodOverlay.classList.remove('hidden');
   htmlBody.classList.add('modal-open');
 
