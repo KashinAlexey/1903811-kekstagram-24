@@ -51,4 +51,8 @@ const enableSlider =() => {
   slider.removeAttribute('disabled');
 };
 
-export { loadSlider, setDefaultSliderStart, setSliderOptions, disableSlider, enableSlider };
+const destroySlider = () => {
+  slider.noUiSlider.destroy();
+};
+
+export { loadSlider, destroySlider, setDefaultSliderStart, setSliderOptions, disableSlider, enableSlider };

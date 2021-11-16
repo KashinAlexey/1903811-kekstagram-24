@@ -1,5 +1,6 @@
 import { STEP, MIN_SCALE_VALUE, MAX_SCALE_VALUE, Filter } from './constants.js';
-import { disableSlider, enableSlider, loadSlider, setSliderOptions } from './slider.js';
+import { disableSlider, enableSlider, loadSlider, setSliderOptions, destroySlider } from './slider.js';
+
 // Переменные
 const form = document.querySelector('.img-upload__form');
 const imgUploadInput = document.querySelector('#upload-file');
@@ -23,6 +24,7 @@ const hashCodeTemplate = /^#\w+/; // TODO Изменить выражение (�
 const deactivationUserForm = (evt) => {
   // Внутренняя логика
   if (evt.key === 'Escape' || evt.type === 'click') {
+    destroySlider();
     imgUplodOverlay.classList.add('hidden');
     htmlBody.classList.remove('modal-open');
     buttonReset.removeEventListener('click', deactivationUserForm);
@@ -43,16 +45,20 @@ const setDefaulParameters = () => {
 const validationUserForm = (cb) => {
   console.log('validationUserForm');
   let currentEffect = 'none';
+  let heshTagInputArray = [];
 
   const inputComments = () => {
     console.log('inputComments');
   };
-  
+
   const onInputHashTags = () => {
-    if (!hashCodeTemplate.test(hashTagsInput.value)) {
-      hashTagsInput.setCustomValidity('Не верный формат хэш-тэга');
+
+    heshTagInputArray = hashCodeTemplate.exec(hashTagsInput.value) || [];
+
+    if (!(heshTagInputArray[0] === undefined)) {
+      heshTagInputArray[0].length === hashTagsInput.value.length ? hashTagsInput.setCustomValidity('') : hashTagsInput.setCustomValidity('Не верный формат хэш-тэга');
     } else {
-      hashTagsInput.setCustomValidity('');
+      hashTagsInput.setCustomValidity('Не верный формат хэш-тэга');
     }
 
     hashTagsInput.reportValidity();
@@ -130,7 +136,6 @@ const validationUserForm = (cb) => {
     buttonScaleControlBigger.addEventListener('click', changingScale);
   }; //OK
 
-
   const onResetUserForm = () => {
     buttonReset.addEventListener('click', deactivationUserForm);
     document.addEventListener('keydown', deactivationUserForm);
@@ -139,8 +144,14 @@ const validationUserForm = (cb) => {
 
   const onSubmitUserForm = () => {
     buttonSubmit.addEventListener('click', (evt) => {
-      evt.preventDefault();
+      //evt.preventDefault();
+      console.log('onSubmitUserForm');
+
+      console.log(form);
+
       const dataToServer = new FormData(evt.target);
+
+      console.log(dataToServer);
       cb(dataToServer); // sendData();
     });
   }; // OK
@@ -160,6 +171,7 @@ const validationUserForm = (cb) => {
 };
 
 const activationUserForm = (cb) => {
+  console.log(11);
   imgUplodOverlay.classList.remove('hidden');
   htmlBody.classList.add('modal-open');
 

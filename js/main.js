@@ -15,4 +15,4 @@ getData(activationFilterForm, showGetDataErrMsg);
 loadingNewUserPhoto(
   () => activationUserForm(
     () => validationUserForm(
-      (dataToServer) => sendData(dataToServer, showSendDataSuccessMsg, showSendDataErrMsg))));
+      (dataToServer) => sendData(dataToServer, showSendDataErrMsg, showSendDataSuccessMsg))));
