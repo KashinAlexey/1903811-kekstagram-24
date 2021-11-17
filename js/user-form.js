@@ -56,7 +56,6 @@ const validationUserForm = (cb) => {
   };
   commentInput.addEventListener('input', onInputComments);
 
-
   const onInputHashTags = () => {
 
     heshTagInputArray = hashCodeTemplate.exec(hashTagsInput.value);
