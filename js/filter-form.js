@@ -6,6 +6,8 @@ const bigPictureContainer = document.querySelector('.big-picture');
 const socialCommentsContainer = document.querySelector('.social__comments');
 const bodyElement = document.querySelector('body');
 const buttonResetBigPicture = bigPictureContainer.querySelector('.big-picture__cancel');
+const buttonCommentsLoader = bigPictureContainer.querySelector('.social__comments-loader');
+const filterForm = document.querySelector('.img-filters');
 
 const deactivationFilterForm = () => {
   console.log('deactivationFilterForm');
@@ -24,33 +26,46 @@ const onFullSizePicture = (evt) => {
   }
 };
 
+const showComments = (comments) => {
+  let commentsCountStart = 0;
+  let commentsCountEnd = 5;
+
+  return ()=> {
+    if (commentsCountEnd > comments.length) {
+      commentsCountEnd = comments.length;
+      buttonCommentsLoader.classList.add('hidden');
+    }
+
+    bigPictureContainer.querySelector('.show_comments-count').textContent = commentsCountEnd;
+    socialCommentsContainer.innerHTML = '';
+    comments.slice(commentsCountStart, commentsCountEnd).forEach((comment) => {
+      const commentElement = commentTemplate.cloneNode(true);
+      commentElement.querySelector('.social__picture').src = comment.avatar;
+      commentElement.querySelector('.social__picture').alt = comment.name;
+      commentElement.querySelector('.social__text').textContent = comment.message;
+      socialCommentsContainer.appendChild(commentElement);
+    });
+    commentsCountStart += 5;
+    commentsCountEnd +=5;
+  };
+};
+
+const onShowComments = (cb) => {
+  cb();
+}; //OK
+
 const showFullSizePicture = (comments) => {
-  console.log('showFullSizePicture');
+  const showNewComments = showComments(comments);
+
   bodyElement.classList.add('modal-open');
   bigPictureContainer.classList.remove('hidden');
+  showNewComments();
 
   buttonResetBigPicture.addEventListener('click', onFullSizePicture);
   document.addEventListener('keydown', onFullSizePicture);
+  buttonCommentsLoader.addEventListener('click', () => onShowComments(showNewComments));
+}; //OK
 
-  console.log(comments);
-  socialCommentsContainer.innerHTML = '';
-  
-  comments.forEach((comment) => {
-
-
-
-    const commentElement = commentTemplate.cloneNode(true);
-    commentElement.querySelector('.social__picture').src = comment.avatar;
-    commentElement.querySelector('.social__text').textContent = comment.message;
-    socialCommentsContainer.appendChild(commentElement);
-
-
-
-  });
-
-
-
-};
 const onEveryGettingPicture = (evt, datafromServer) => {
 
   datafromServer.forEach(({id, url, likes, comments, description}) => {
@@ -83,17 +98,6 @@ const activationFilterForm = (datafromServer) => {
 
   showFilteredPicturesList(datafromServer);
 };
-
-
-const showComments = () => {
-  console.log('showComments');
-};
-const onShowComments = () => {
-  console.log('onShowComments');
-
-  showComments();
-};
-
 
 
 export { deactivationFilterForm, activationFilterForm };
