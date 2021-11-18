@@ -40,7 +40,7 @@ const setDefaulParameters = () => {
   disableSlider();
 };
 
-const validationUserForm = (cb) => {
+const validationUserForm = () => {
   console.log('validationUserForm');
   let currentEffect = 'none';
   let heshTagInputArray;
@@ -199,15 +199,9 @@ const validationUserForm = (cb) => {
   }; // OK
 
   setDefaulParameters();
-
-  //inputComments();
-  //inputHashTags();
-
   onChoosingEffect();
   setDefaultEffectIntensity();
-
   onChangingScale();
-
   onResetUserForm();
   onSubmitUserForm();
 };
