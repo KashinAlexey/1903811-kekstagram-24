@@ -1,4 +1,4 @@
-import { shuffle } from './util.js';
+import { shuffle, debounce } from './util.js';
 
 const pictureTemplate = document.querySelector('#picture').content.querySelector('.picture');
 const commentTemplate = document.querySelector('#comment').content.querySelector('.social__comment');
@@ -15,13 +15,12 @@ const deactivationFilterForm = () => {
   filterForm.classList.add('img-filters--inactive');
 };
 
-const comparePictures = (pictureA, pictureB) => pictureB.comments.length - pictureA.comments.length; // OK
+//const comparePictures = (pictureA, pictureB) => pictureB.comments.length - pictureA.comments.length; // OK
 
 const closeFullSizePicture = () => {
   bodyElement.classList.remove('modal-open');
   bigPictureContainer.classList.add('hidden');
 }; //OK
-
 const onFullSizePicture = (evt) => {
   if (evt.key === 'Escape' || evt.type === 'click') {
     evt.preventDefault();
@@ -55,7 +54,6 @@ const showComments = (comments) => {
     commentsCountEnd +=5;
   };
 }; // OK
-
 const onShowComments = (cb) => {
   cb();
 }; //OK
@@ -106,7 +104,9 @@ const showFilteredPicturesList = (dataFromServer) => {
   });
 }; //OK
 
-const onActivationFilterForm = (evt, dataFromServer) => {
+const onActivationFilterForm = (evt, dataFromServer, callback) => {
+
+  const comparePictures = (pictureA, pictureB) => pictureB.comments.length - pictureA.comments.length;
 
   const newDataArray = dataFromServer.slice();
   for (const button of buttonsFilterForm) {
@@ -129,7 +129,8 @@ const onActivationFilterForm = (evt, dataFromServer) => {
     }
   };
 
-  showFilteredPicturesList(getFilteredData());
+  callback(getFilteredData());
+
 }; // OK
 
 const activationFilterForm = (dataFromServer) => {
@@ -137,7 +138,7 @@ const activationFilterForm = (dataFromServer) => {
   showFilteredPicturesList(dataFromServer);
 
   filterForm.addEventListener('click', (evt) => {
-    onActivationFilterForm(evt, dataFromServer);
+    onActivationFilterForm(evt, dataFromServer, debounce((data) => showFilteredPicturesList(data), 500));
   });
 }; // OK
 
