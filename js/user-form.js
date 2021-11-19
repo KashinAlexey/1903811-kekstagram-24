@@ -1,5 +1,5 @@
 import { STEP, MIN_SCALE_VALUE, MAX_SCALE_VALUE, Filter, COMMENT_LENGTH } from './constants.js';
-import { disableSlider, enableSlider, loadSlider, setSliderOptions, destroySlider } from './slider.js';
+import { disableSlider, enableSlider, loadSlider, setSliderOptions, setDefaultSliderStart, destroySlider } from './slider.js';
 
 // Переменные
 const form = document.querySelector('.img-upload__form');
@@ -7,7 +7,6 @@ const imgUploadInput = document.querySelector('#upload-file');
 const imgUplodOverlay = document.querySelector('.img-upload__overlay');
 const htmlBody = document.querySelector('body');
 const buttonReset = document.querySelector('#upload-cancel');
-const buttonSubmit = document.querySelector('#upload-submit');
 const imgUploadScale = document.querySelector('.img-upload__scale');
 const buttonScaleControlSmaller = imgUploadScale.querySelector('.scale__control--smaller');
 const buttonScaleControlBigger = imgUploadScale.querySelector('.scale__control--bigger');
@@ -20,28 +19,24 @@ const commentInput = document.querySelector('.text__description');
 
 const hashCodeTemplate = /([#][a-zA-Z0-9]{1,19}[ ]*)+/; //new RegExp('([#][a-zA-Z0-9]{0,18})+(\\W|$)', 'g'); // /([#][a-zA-Z0-9]{0,18})+(\W|$)/;
 
+let removeResetUserFormEventListener = () => {};
+
 // Функционал модуля
-
-const deactivationUserForm = (evt) => {
-  // Внутренняя логика
-  if (!document.activeElement.classList.contains('text__hashtags') && !document.activeElement.classList.contains('text__description') &&(evt.key === 'Escape' || evt.type === 'click')) {
-    destroySlider();
-    imgUplodOverlay.classList.add('hidden');
-    htmlBody.classList.remove('modal-open');
-    buttonReset.removeEventListener('click', deactivationUserForm);
-    document.removeEventListener('keydown', deactivationUserForm);
-  }
-}; //OK
-
 const setDefaulParameters = () => {
-  console.log('setDefaulParameters');
   imgUploadPreview.style.transform = `scale(${1.00})`;
   imgUploadPreview.style.filter = '';
-  disableSlider();
-};
+  imgUploadPreview.setAttribute('class' ,'');
+  form.reset();
+}; // OK
 
-const validationUserForm = () => {
-  console.log('validationUserForm');
+const deactivationUserForm = () => {
+  imgUplodOverlay.classList.add('hidden');
+  htmlBody.classList.remove('modal-open');
+  removeResetUserFormEventListener();
+  form.reset();
+}; // OK
+
+const validationUserForm = (cb) => {
   let currentEffect = 'none';
   let heshTagInputArray;
 
@@ -53,7 +48,7 @@ const validationUserForm = () => {
     }
 
     commentInput.reportValidity();
-  };
+  }; // OK
   commentInput.addEventListener('input', onInputComments);
 
   const onInputHashTags = () => {
@@ -127,7 +122,6 @@ const validationUserForm = () => {
         return imgUploadPreview.style.filter = `brightness(${value})`;
     }
   }; // OK
-  loadSlider((value) => onEffectIntensity(value)); // OK
 
   const setEffect = (evt) => {
     const min = Filter[evt.target.value].min;
@@ -137,9 +131,7 @@ const validationUserForm = () => {
     currentEffect = evt.target.value;
     setSliderOptions(min, max, step);
     setDefaultEffectIntensity();
-    if (imgUploadPreview.className) {
-      imgUploadPreview.classList.remove(imgUploadPreview.className);
-    }
+    imgUploadPreview.setAttribute('class' ,'');
 
     if (evt.target.value !== 'none') {
       imgUploadPreview.classList.add(`effects__preview--${evt.target.value}`);
@@ -152,7 +144,7 @@ const validationUserForm = () => {
   }; //OK
   const onChoosingEffect = () => {
     effectsList.addEventListener('input', (evt) => {
-      currentEffect = setEffect(evt);
+      setEffect(evt);
     });
   }; // OK
 
@@ -177,44 +169,57 @@ const validationUserForm = () => {
     buttonScaleControlBigger.addEventListener('click', changingScale);
   }; //OK
 
-  const onResetUserForm = () => {
-    buttonReset.addEventListener('click', deactivationUserForm);
-    document.addEventListener('keydown', deactivationUserForm);
-    setDefaulParameters();
+  const onResetUserForm = (evt) => {
+    if (!document.activeElement.classList.contains('text__hashtags') && !document.activeElement.classList.contains('text__description') && (evt.key === 'Escape' || evt.type === 'click')) {
+      setDefaulParameters();
+      deactivationUserForm();
+    }
   }; // OK
 
-  const onSubmitUserForm = () => {
-    buttonSubmit.addEventListener('click', (evt) => {
-      //evt.preventDefault();
-      console.log('onSubmitUserForm');
+  const resetUserForm = () => {
+    buttonReset.addEventListener('click', onResetUserForm);
+    document.addEventListener('keydown', onResetUserForm);
 
-      console.log(form);
+    return () => {
+      buttonReset.removeEventListener('click', onResetUserForm);
+      document.removeEventListener('keydown', onResetUserForm);
+    };
+  }; // OK
 
+  const submitUserForm = () => {
+    form.addEventListener('submit', (evt) => {
+      evt.preventDefault();
       const dataToServer = new FormData(evt.target);
-
-      console.log(dataToServer);
-      //sendData(dataToServer);
-      //cb(dataToServer); // sendData();
+      cb(dataToServer);
+      evt.stopImmediatePropagation(); // Останвливаем дальнейшие обработчики этого события
     });
   }; // OK
 
-  setDefaulParameters();
+  try {
+    loadSlider((value) => onEffectIntensity(value)); // OK
+  } catch (error) {
+    destroySlider();
+    loadSlider((value) => onEffectIntensity(value)); // OK
+  }
+
+  disableSlider();
+  setDefaultSliderStart();
   onChoosingEffect();
   setDefaultEffectIntensity();
   onChangingScale();
-  onResetUserForm();
-  onSubmitUserForm();
+  removeResetUserFormEventListener = resetUserForm();
+  submitUserForm();
 };
 
 const activationUserForm = (cb) => {
   imgUplodOverlay.classList.remove('hidden');
   htmlBody.classList.add('modal-open');
-
-  cb(); // validationUserForm()
+  imgUploadPreview.src =  window.URL.createObjectURL(imgUploadInput.files[0]);
+  cb();
 }; //OK
 
 const loadingNewUserPhoto = (cb) => {
   imgUploadInput.addEventListener('input', cb);
-}; // TODO Added real photo
+};
 
-export { loadingNewUserPhoto, activationUserForm, validationUserForm, setDefaulParameters };
+export { loadingNewUserPhoto, activationUserForm, validationUserForm, setDefaulParameters, deactivationUserForm};
