@@ -4,7 +4,7 @@ const GET_URL = 'https://24.javascript.pages.academy/kekstagram/data';
 
 // Параметры масштаба
 const STEP = 25;
-const MIN_SCALE_VALUE = 0;
+const MIN_SCALE_VALUE = 25;
 const MAX_SCALE_VALUE = 100;
 
 // Параметры слайдера
@@ -14,7 +14,7 @@ const SLIDER_START_DEFAULT = 100;
 const COMMENT_LENGTH = 140;
 
 // Список значений фильтра
-const Filter = {
+const FILTER = {
   none: {
     min: 0,
     max: 100,
@@ -47,13 +47,4 @@ const Filter = {
   },
 };
 
-export { SEND_URL, GET_URL, STEP, MIN_SCALE_VALUE, MAX_SCALE_VALUE, SLIDER_START_DEFAULT, Filter, COMMENT_LENGTH };
-
-
-/* Get data
-{ id: 0,
-  url: 'photos/1.jpg',
-  likes: 11,
-  comments: Array(9),
-  description: "Если чётко сформулировать желание для Вселенной, т…отеть и мечтать..... / I've bought some potatoes."}
-*/
+export { SEND_URL, GET_URL, STEP, MIN_SCALE_VALUE, MAX_SCALE_VALUE, SLIDER_START_DEFAULT, FILTER, COMMENT_LENGTH };

@@ -11,11 +11,10 @@ const buttonCommentsLoader = bigPictureContainer.querySelector('.social__comment
 const filterForm = document.querySelector('.img-filters');
 const buttonsFilterForm = filterForm.querySelectorAll('button');
 
+
 const deactivationFilterForm = () => {
   filterForm.classList.add('img-filters--inactive');
 };
-
-//const comparePictures = (pictureA, pictureB) => pictureB.comments.length - pictureA.comments.length; // OK
 
 const closeFullSizePicture = () => {
   bodyElement.classList.remove('modal-open');
@@ -32,16 +31,19 @@ const onFullSizePicture = (evt) => {
 
 const showComments = (comments) => {
   let commentsCountStart = 0;
-  let commentsCountEnd = 5;
+  let commentsCountEnd = comments.length >= 5 ? 5 : comments.length;
 
   return ()=> {
-    bigPictureContainer.querySelector('.show_comments-count').textContent = commentsCountEnd;
     socialCommentsContainer.innerHTML = '';
 
-    if (commentsCountEnd > comments.length) {
+    if (commentsCountEnd >= comments.length) {
       commentsCountEnd = comments.length;
       buttonCommentsLoader.classList.add('hidden');
+    } else {
+      buttonCommentsLoader.classList.remove('hidden');
     }
+
+    bigPictureContainer.querySelector('.show_comments-count').textContent = commentsCountEnd;
 
     comments.slice(commentsCountStart, commentsCountEnd).forEach((comment) => {
       const commentElement = commentTemplate.cloneNode(true);
@@ -54,8 +56,8 @@ const showComments = (comments) => {
     commentsCountEnd +=5;
   };
 }; // OK
-const onShowComments = (cb) => {
-  cb();
+const onShowComments = (callback) => {
+  callback();
 }; //OK
 
 const showFullSizePicture = (comments) => {
@@ -114,7 +116,7 @@ const onActivationFilterForm = (evt, dataFromServer, callback) => {
   }
 
   const getFilteredData = () => {
-    switch (evt.target.getAttribute('id')) {
+    switch (evt.currentTarget.getAttribute('id')) {
       case 'filter-default':
         evt.target.classList.add('img-filters__button--active');
         return newDataArray;
@@ -137,9 +139,11 @@ const activationFilterForm = (dataFromServer) => {
   filterForm.classList.remove('img-filters--inactive');
   showFilteredPicturesList(dataFromServer);
 
-  filterForm.addEventListener('click', (evt) => {
-    onActivationFilterForm(evt, dataFromServer, debounce((data) => showFilteredPicturesList(data), 500));
-  });
+  for (const button of buttonsFilterForm) {
+    button.addEventListener('click', (evt) => {
+      onActivationFilterForm(evt, dataFromServer, debounce((data) => showFilteredPicturesList(data), 500));
+    });
+  }
 }; // OK
 
 

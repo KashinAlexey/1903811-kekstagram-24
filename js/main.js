@@ -7,7 +7,6 @@ import { activationUserForm, validationUserForm } from './user-form.js';
 import { sendData } from './data.js';
 import { showSendDataErrMsg, showSendDataSuccessMsg } from './message.js';
 
-
 deactivationFilterForm();
 
 getData(activationFilterForm, showGetDataErrMsg);

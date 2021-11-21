@@ -8,12 +8,10 @@ const successMsgContainerForSendData = document.querySelector('#success').conten
 const butttonCloseSuccessMsgContainerForSendData = successMsgContainerForSendData.querySelector('.success__button');
 
 // Функционал модуля
-
 const closeGetDataErrMsg = () => {
   errMsgContainerForGetData.remove();
 }; // OK
 const onGetDataErrMsg = (evt) => {
-  // Внутренняя логика
   if (evt.key || evt.type === 'click') {
     evt.preventDefault();
     closeGetDataErrMsg();
@@ -25,7 +23,7 @@ const showGetDataErrMsg = () => {
   // Переменные
   errMsgContainerForGetData = document.createElement('div');
 
-  // Внутренняя логика
+  // логика
   errMsgContainerForGetData.style.zIndex = 100;
   errMsgContainerForGetData.style.position = 'absolute';
   errMsgContainerForGetData.style.left = 0;
@@ -39,17 +37,14 @@ const showGetDataErrMsg = () => {
 
   document.body.append(errMsgContainerForGetData);
 
-  // Внешняя логика
   document.addEventListener('keydown', onGetDataErrMsg);
   document.addEventListener('click', onGetDataErrMsg);
 }; // OK
 
 const closeSendDataErrMsg = () => {
-  // Внутренняя логика
   errMsgContainerForSendData.remove();
 }; // OK
 const onSendDataErrMsg = (evt) => {
-  // Внутренняя логика
   if (evt.key === 'Escape' || (evt.type === 'click' && evt.target.className !== 'error__inner')) {
     closeSendDataErrMsg();
     butttonCloseErrMsgContainerForSendData.removeEventListener('click',     onSendDataErrMsg);
@@ -58,9 +53,7 @@ const onSendDataErrMsg = (evt) => {
   }
 };
 const showSendDataErrMsg = () => {
-  // Внутренняя логика
   document.body.append(errMsgContainerForSendData);
-  // Внешняя логика
   deactivationUserForm();
   document.addEventListener('keydown', onSendDataErrMsg);
   document.addEventListener('click', onSendDataErrMsg);
@@ -68,11 +61,9 @@ const showSendDataErrMsg = () => {
 }; //OK
 
 const closeSendDataSuccessMsg = () => {
-  // Внутренняя логика
   successMsgContainerForSendData.remove();
 }; //OK
 const onSendDataSuccessMsg = (evt) => {
-  // Внешняя логика (или подписка на событие)
   if (evt.key === 'Escape' || (evt.type === 'click' && evt.target.className !== 'success__inner')) {
     closeSendDataSuccessMsg();
     setDefaulParameters();
@@ -80,12 +71,9 @@ const onSendDataSuccessMsg = (evt) => {
     document.removeEventListener('click', onSendDataSuccessMsg);
     butttonCloseSuccessMsgContainerForSendData.removeEventListener('click', onSendDataSuccessMsg);
   }
-
-}; // TODO click any outside
+}; // OK
 const showSendDataSuccessMsg = () => {
-  // Внутренняя логика
   document.body.append(successMsgContainerForSendData);
-  // Внешняя логика
   deactivationUserForm();
   document.addEventListener('keydown', onSendDataSuccessMsg);
   document.addEventListener('click', onSendDataSuccessMsg);

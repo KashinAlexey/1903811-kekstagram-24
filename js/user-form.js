@@ -1,5 +1,5 @@
-import { STEP, MIN_SCALE_VALUE, MAX_SCALE_VALUE, Filter, COMMENT_LENGTH } from './constants.js';
-import { disableSlider, enableSlider, loadSlider, setSliderOptions, setDefaultSliderStart, destroySlider } from './slider.js';
+import { STEP, MIN_SCALE_VALUE, MAX_SCALE_VALUE, FILTER, COMMENT_LENGTH } from './constants.js';
+import { loadSlider, setSliderOptions, setDefaultSliderStart, destroySlider } from './slider.js';
 
 // Переменные
 const form = document.querySelector('.img-upload__form');
@@ -16,29 +16,29 @@ const effectsList = document.querySelector('.effects__list');
 const effectLevelInput = document.querySelector('.effect-level__value');
 const hashTagsInput = document.querySelector('.text__hashtags');
 const commentInput = document.querySelector('.text__description');
+const imgUploadEffectLevel = document.querySelector('.img-upload__effect-level');
 
-const hashCodeTemplate = /([#][a-zA-Z0-9]{1,19}[ ]*)+/; //new RegExp('([#][a-zA-Z0-9]{0,18})+(\\W|$)', 'g'); // /([#][a-zA-Z0-9]{0,18})+(\W|$)/;
+const hashCodeTemplate = /([#][a-zA-Z0-9]{1,19}[ ]*)+/;
 
-let removeResetUserFormEventListener = () => {};
+const handlers = []; // Массив функций удаления обработчиков
 
 // Функционал модуля
 const setDefaulParameters = () => {
   imgUploadPreview.style.transform = `scale(${1.00})`;
   imgUploadPreview.style.filter = '';
   imgUploadPreview.setAttribute('class' ,'');
+  handlers.forEach((handler) => handler()); // Удаляем все обработчики с формы
   form.reset();
 }; // OK
 
 const deactivationUserForm = () => {
   imgUplodOverlay.classList.add('hidden');
   htmlBody.classList.remove('modal-open');
-  removeResetUserFormEventListener();
   form.reset();
 }; // OK
 
-const validationUserForm = (cb) => {
+const validationUserForm = (callback) => {
   let currentEffect = 'none';
-  let heshTagInputArray;
 
   const onInputComments = () => {
     if (commentInput.value.length > COMMENT_LENGTH) {
@@ -50,56 +50,43 @@ const validationUserForm = (cb) => {
     commentInput.reportValidity();
   }; // OK
   commentInput.addEventListener('input', onInputComments);
+  handlers.push(() => commentInput.removeEventListener('input', onInputComments));
 
   const onInputHashTags = () => {
+    const heshTags = hashCodeTemplate.exec(hashTagsInput.value); // Массив строк ввода пользователя соответствующих шаблону регулярного выражения
+    let userInputs = hashTagsInput.value.split(' '); // Массив строк ввода пользователя
+    const heshTagsSet = new Set(heshTags); // Массив уникальных строк соответствующих шаблону регулярного выражения
+    const userInputsSet = new Set(userInputs); // Массив уникальных строк ввода пользователя
 
-    heshTagInputArray = hashCodeTemplate.exec(hashTagsInput.value);
+    // Начало с #
+    userInputs.forEach((str) => {
+      str[0] === '#' && heshTagsSet.size > 0 ? hashTagsInput.setCustomValidity('') : hashTagsInput.setCustomValidity('Не верный формат хеш-тега');
+    });
 
-    try {
-      if (hashTagsInput.value.match(/[#]/g).length <= 5) {
-        if (!(heshTagInputArray === undefined || heshTagInputArray === null)) {
-          heshTagInputArray[0].length === hashTagsInput.value.length ? hashTagsInput.setCustomValidity('') : hashTagsInput.setCustomValidity('Не верный формат хэш-тэга');
-        } else {
-          hashTagsInput.setCustomValidity('Не верный формат хэш-тэга');
-        }
-      } else {
-        hashTagsInput.setCustomValidity('Больше 5 хеш-тегов нельзя!');
+    // Соответствие критериям
+    if (heshTagsSet.size > 0) {
+      if ([...heshTagsSet][0].length !== hashTagsInput.value.length) {
+        hashTagsInput.setCustomValidity('Не верный формат хеш-тега');
+      } else if (userInputsSet.size !== userInputs.length) {
+        hashTagsInput.setCustomValidity('Повторяться нельзя');
+      } else if (userInputs.length > 5) {
+        hashTagsInput.setCustomValidity('Больше 5 нельзя');
       }
-    } catch (error) {
-      hashTagsInput.setCustomValidity('Не верный формат хэш-тэга');
+      else {
+        hashTagsInput.setCustomValidity('');
+      }
     }
 
-    const arrayOfStrings = hashTagsInput.value.split(' ');
-
-    arrayOfStrings.forEach((arr) => {
-
-      let vol = 0;
-      if (arr !== '') {
-        for (let count = 0; count < arrayOfStrings.length; count ++) {
-          if (arrayOfStrings[count] === arr) {
-            vol++;
-          }
-        }
-
-        if (vol > 1) {
-          hashTagsInput.setCustomValidity('Повторяться нельзя');
-        }
-      } else {
-        for (let count = 0; count < arrayOfStrings.length; count ++) {
-          if (arrayOfStrings[count] === arr) {
-            vol++;
-          }
-        }
-
-        if (vol > 1) {
-          hashTagsInput.setCustomValidity('Одного пробела достаточно');
-        }
-      }
-    });
+    // Если ничего не введено
+    if (hashTagsInput.value === '') {
+      hashTagsInput.setCustomValidity('');
+      userInputs = [];
+    }
 
     hashTagsInput.reportValidity();
   }; // OK
   hashTagsInput.addEventListener('input', onInputHashTags); // OK
+  handlers.push(() => hashTagsInput.removeEventListener('input', onInputHashTags));
 
   const setDefaultEffectIntensity = () => {
     imgUploadPreview.style.filter = '';
@@ -123,10 +110,10 @@ const validationUserForm = (cb) => {
     }
   }; // OK
 
-  const setEffect = (evt) => {
-    const min = Filter[evt.target.value].min;
-    const max = Filter[evt.target.value].max;
-    const step = Filter[evt.target.value].step;
+  const onChoosingEffect = (evt) => {
+    const min = FILTER[evt.target.value].min;
+    const max = FILTER[evt.target.value].max;
+    const step = FILTER[evt.target.value].step;
 
     currentEffect = evt.target.value;
     setSliderOptions(min, max, step);
@@ -135,39 +122,36 @@ const validationUserForm = (cb) => {
 
     if (evt.target.value !== 'none') {
       imgUploadPreview.classList.add(`effects__preview--${evt.target.value}`);
-      enableSlider();
+      imgUploadEffectLevel.classList.remove('hidden');
     } else {
-      disableSlider();
+      imgUploadEffectLevel.classList.add('hidden');
     }
 
     return evt.target.value;
   }; //OK
-  const onChoosingEffect = () => {
-    effectsList.addEventListener('input', (evt) => {
-      setEffect(evt);
-    });
-  }; // OK
+  effectsList.addEventListener('input', onChoosingEffect);
+  handlers.push(() => effectsList.removeEventListener('input', onChoosingEffect));
 
-  const changingScale = (evt) => {
-    const isBigger = evt.target.classList.contains('scale__control--bigger');
-
-    let newString = '';
-    for (let count = 0; count < scaleControlInput.value.length - 1; count++) {
-      newString = newString + scaleControlInput.value[count];
+  const setScaleValue = (newString, step) => {
+    scaleControlInput.value = `${String(step + Number(newString))}%`;
+    imgUploadPreview.style.transform = `scale(${(step + Number(newString)) / 100})`;
+  };
+  const onChangingSmallerScale = () => {
+    const newString = scaleControlInput.value.slice(0, -1);
+    if (Number(newString) - STEP >= MIN_SCALE_VALUE) {
+      setScaleValue(newString, -STEP);
     }
-
-    if (isBigger && (Number(newString) + STEP) <= MAX_SCALE_VALUE) {
-      scaleControlInput.value = `${String(STEP + Number(newString))}%`;
-      imgUploadPreview.style.transform = `scale(${(STEP + Number(newString)) / 100})`;
-    } else if (!isBigger && (Number(newString) - STEP) >= MIN_SCALE_VALUE) {
-      scaleControlInput.value = `${String(Number(newString) - STEP)}%`;
-      imgUploadPreview.style.transform = `scale(${(Number(newString) - STEP) / 100})`;
+  };
+  const onChangingBiggerScale = () => {
+    const newString = scaleControlInput.value.slice(0, -1);
+    if (Number(newString) + STEP <= MAX_SCALE_VALUE) {
+      setScaleValue(newString, STEP);
     }
-  }; // OK
-  const onChangingScale = () => {
-    buttonScaleControlSmaller.addEventListener('click', changingScale);
-    buttonScaleControlBigger.addEventListener('click', changingScale);
-  }; //OK
+  };
+  buttonScaleControlSmaller.addEventListener('click', onChangingSmallerScale);
+  buttonScaleControlBigger.addEventListener('click', onChangingBiggerScale);
+  handlers.push(() => buttonScaleControlBigger.removeEventListener('click', onChangingBiggerScale));
+  handlers.push(() => buttonScaleControlSmaller.removeEventListener('click', onChangingSmallerScale));
 
   const onResetUserForm = (evt) => {
     if (!document.activeElement.classList.contains('text__hashtags') && !document.activeElement.classList.contains('text__description') && (evt.key === 'Escape' || evt.type === 'click')) {
@@ -175,25 +159,18 @@ const validationUserForm = (cb) => {
       deactivationUserForm();
     }
   }; // OK
+  buttonReset.addEventListener('click', onResetUserForm);
+  document.addEventListener('keydown', onResetUserForm);
+  handlers.push(() => buttonReset.removeEventListener('click', onResetUserForm));
+  handlers.push(() => document.removeEventListener('keydown', onResetUserForm));
 
-  const resetUserForm = () => {
-    buttonReset.addEventListener('click', onResetUserForm);
-    document.addEventListener('keydown', onResetUserForm);
-
-    return () => {
-      buttonReset.removeEventListener('click', onResetUserForm);
-      document.removeEventListener('keydown', onResetUserForm);
-    };
+  const onSubmitUserForm = (evt) => {
+    evt.preventDefault();
+    const dataToServer = new FormData(evt.target);
+    callback(dataToServer);
   }; // OK
-
-  const submitUserForm = () => {
-    form.addEventListener('submit', (evt) => {
-      evt.preventDefault();
-      const dataToServer = new FormData(evt.target);
-      cb(dataToServer);
-      evt.stopImmediatePropagation(); // Останвливаем дальнейшие обработчики этого события
-    });
-  }; // OK
+  form.addEventListener('submit', onSubmitUserForm);
+  handlers.push(() => form.removeEventListener('submit', onSubmitUserForm));
 
   try {
     loadSlider((value) => onEffectIntensity(value)); // OK
@@ -202,24 +179,20 @@ const validationUserForm = (cb) => {
     loadSlider((value) => onEffectIntensity(value)); // OK
   }
 
-  disableSlider();
+  imgUploadEffectLevel.classList.add('hidden');
   setDefaultSliderStart();
-  onChoosingEffect();
   setDefaultEffectIntensity();
-  onChangingScale();
-  removeResetUserFormEventListener = resetUserForm();
-  submitUserForm();
 };
 
-const activationUserForm = (cb) => {
+const activationUserForm = (callback) => {
   imgUplodOverlay.classList.remove('hidden');
   htmlBody.classList.add('modal-open');
   imgUploadPreview.src =  window.URL.createObjectURL(imgUploadInput.files[0]);
-  cb();
+  callback();
 }; //OK
 
-const loadingNewUserPhoto = (cb) => {
-  imgUploadInput.addEventListener('input', cb);
+const loadingNewUserPhoto = (callback) => {
+  imgUploadInput.addEventListener('input', callback);
 };
 
 export { loadingNewUserPhoto, activationUserForm, validationUserForm, setDefaulParameters, deactivationUserForm};

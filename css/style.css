@@ -1416,3 +1416,11 @@ main {
 .hidden {
   display: none;
 }
+
+input:invalid {
+  border: 5px solid red;
+}
+
+textarea:invalid {
+  border: 5px solid red;
+}
