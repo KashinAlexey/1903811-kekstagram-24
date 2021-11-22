@@ -1,4 +1,4 @@
-import { setDefaulParameters, deactivationUserForm } from './user-form.js';
+import { setDefaulParameters, deactivateUserForm } from './user-form.js';
 
 // Переменные
 let errMsgContainerForGetData;
@@ -24,11 +24,11 @@ const showGetDataErrMsg = () => {
   errMsgContainerForGetData = document.createElement('div');
 
   // логика
-  errMsgContainerForGetData.style.zIndex = 100;
+  errMsgContainerForGetData.style.zIndex = '100';
   errMsgContainerForGetData.style.position = 'absolute';
-  errMsgContainerForGetData.style.left = 0;
-  errMsgContainerForGetData.style.top = 0;
-  errMsgContainerForGetData.style.right = 0;
+  errMsgContainerForGetData.style.left = '0';
+  errMsgContainerForGetData.style.top = '0';
+  errMsgContainerForGetData.style.right = '0';
   errMsgContainerForGetData.style.padding = '10px 3px';
   errMsgContainerForGetData.style.fontSize = '30px';
   errMsgContainerForGetData.style.textAlign = 'center';
@@ -54,7 +54,7 @@ const onSendDataErrMsg = (evt) => {
 };
 const showSendDataErrMsg = () => {
   document.body.append(errMsgContainerForSendData);
-  deactivationUserForm();
+  deactivateUserForm();
   document.addEventListener('keydown', onSendDataErrMsg);
   document.addEventListener('click', onSendDataErrMsg);
   butttonCloseErrMsgContainerForSendData.addEventListener('click', onSendDataErrMsg);
@@ -74,7 +74,7 @@ const onSendDataSuccessMsg = (evt) => {
 }; // OK
 const showSendDataSuccessMsg = () => {
   document.body.append(successMsgContainerForSendData);
-  deactivationUserForm();
+  deactivateUserForm();
   document.addEventListener('keydown', onSendDataSuccessMsg);
   document.addEventListener('click', onSendDataSuccessMsg);
   butttonCloseSuccessMsgContainerForSendData.addEventListener('click', onSendDataSuccessMsg);

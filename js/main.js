@@ -1,17 +1,17 @@
-import { deactivationFilterForm } from './filter-form.js';
+import { deactivateFilterForm } from './filter-form.js';
 import { getData } from './data.js';
-import { loadingNewUserPhoto } from './user-form.js';
+import { loadNewUserPhoto } from './user-form.js';
 import { showGetDataErrMsg } from './message.js';
-import { activationFilterForm } from './filter-form.js';
-import { activationUserForm, validationUserForm } from './user-form.js';
+import { activateFilterForm } from './filter-form.js';
+import { activateUserForm, validateUserForm } from './user-form.js';
 import { sendData } from './data.js';
 import { showSendDataErrMsg, showSendDataSuccessMsg } from './message.js';
 
-deactivationFilterForm();
+deactivateFilterForm();
 
-getData(activationFilterForm, showGetDataErrMsg);
+getData(activateFilterForm, showGetDataErrMsg);
 
-loadingNewUserPhoto(
-  () => activationUserForm(
-    () => validationUserForm(
+loadNewUserPhoto(
+  () => activateUserForm(
+    () => validateUserForm(
       (dataToServer) => sendData(dataToServer, showSendDataSuccessMsg, showSendDataErrMsg))));

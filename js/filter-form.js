@@ -1,4 +1,5 @@
 import { shuffle, debounce } from './util.js';
+import { COMMENT_SHOW_NUMBER, NUMBER_OF_RANDOM_PHOTOS, TIME_DELAY } from './constants.js';
 
 const pictureTemplate = document.querySelector('#picture').content.querySelector('.picture');
 const commentTemplate = document.querySelector('#comment').content.querySelector('.social__comment');
@@ -12,7 +13,7 @@ const filterForm = document.querySelector('.img-filters');
 const buttonsFilterForm = filterForm.querySelectorAll('button');
 
 
-const deactivationFilterForm = () => {
+const deactivateFilterForm = () => {
   filterForm.classList.add('img-filters--inactive');
 };
 
@@ -30,8 +31,7 @@ const onFullSizePicture = (evt) => {
 };
 
 const showComments = (comments) => {
-  let commentsCountStart = 0;
-  let commentsCountEnd = comments.length >= 5 ? 5 : comments.length;
+  let commentsCountEnd = comments.length >= COMMENT_SHOW_NUMBER ? COMMENT_SHOW_NUMBER : comments.length;
 
   return ()=> {
     socialCommentsContainer.innerHTML = '';
@@ -45,15 +45,14 @@ const showComments = (comments) => {
 
     bigPictureContainer.querySelector('.show_comments-count').textContent = commentsCountEnd;
 
-    comments.slice(commentsCountStart, commentsCountEnd).forEach((comment) => {
+    comments.slice(0, commentsCountEnd).forEach((comment) => {
       const commentElement = commentTemplate.cloneNode(true);
       commentElement.querySelector('.social__picture').src = comment.avatar;
       commentElement.querySelector('.social__picture').alt = comment.name;
       commentElement.querySelector('.social__text').textContent = comment.message;
       socialCommentsContainer.appendChild(commentElement);
     });
-    commentsCountStart += 5;
-    commentsCountEnd +=5;
+    commentsCountEnd += COMMENT_SHOW_NUMBER;
   };
 }; // OK
 const onShowComments = (callback) => {
@@ -88,11 +87,9 @@ const onEveryGettingPicture = (evt, dataFromServer) => {
 
 const showFilteredPicturesList = (dataFromServer) => {
 
-  if (pictureContainer.childElementCount > 2) {
-    const elements = pictureContainer.querySelectorAll('.picture');
-    for (const element of elements) {
-      element.remove();
-    }
+  const elements = pictureContainer.querySelectorAll('.picture');
+  for (const element of elements) {
+    element.remove();
   }
 
   dataFromServer.forEach(({id, url, likes, comments}) => {
@@ -123,7 +120,7 @@ const onActivationFilterForm = (evt, dataFromServer, callback) => {
       case 'filter-random':
         shuffle(newDataArray);
         evt.target.classList.add('img-filters__button--active');
-        return newDataArray.slice(0, 10);
+        return newDataArray.slice(0, NUMBER_OF_RANDOM_PHOTOS);
       case 'filter-discussed':
         newDataArray.sort(comparePictures);
         evt.target.classList.add('img-filters__button--active');
@@ -135,16 +132,16 @@ const onActivationFilterForm = (evt, dataFromServer, callback) => {
 
 }; // OK
 
-const activationFilterForm = (dataFromServer) => {
+const activateFilterForm = (dataFromServer) => {
   filterForm.classList.remove('img-filters--inactive');
   showFilteredPicturesList(dataFromServer);
 
   for (const button of buttonsFilterForm) {
     button.addEventListener('click', (evt) => {
-      onActivationFilterForm(evt, dataFromServer, debounce((data) => showFilteredPicturesList(data), 500));
+      onActivationFilterForm(evt, dataFromServer, debounce((data) => showFilteredPicturesList(data), TIME_DELAY));
     });
   }
 }; // OK
 
 
-export { deactivationFilterForm, activationFilterForm };
+export { deactivateFilterForm, activateFilterForm };

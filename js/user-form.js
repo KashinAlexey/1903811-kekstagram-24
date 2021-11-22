@@ -1,4 +1,4 @@
-import { STEP, MIN_SCALE_VALUE, MAX_SCALE_VALUE, FILTER, COMMENT_LENGTH } from './constants.js';
+import { STEP, MIN_SCALE_VALUE, MAX_SCALE_VALUE, FILTER, COMMENT_LENGTH, MAX_HESH_TAG_NUMBER } from './constants.js';
 import { loadSlider, setSliderOptions, setDefaultSliderStart, destroySlider } from './slider.js';
 
 // Переменные
@@ -29,15 +29,17 @@ const setDefaulParameters = () => {
   imgUploadPreview.setAttribute('class' ,'');
   handlers.forEach((handler) => handler()); // Удаляем все обработчики с формы
   form.reset();
+  hashTagsInput.setCustomValidity('');
+  commentInput.setCustomValidity('');
 }; // OK
 
-const deactivationUserForm = () => {
+const deactivateUserForm = () => {
   imgUplodOverlay.classList.add('hidden');
   htmlBody.classList.remove('modal-open');
   form.reset();
 }; // OK
 
-const validationUserForm = (callback) => {
+const validateUserForm = (callback) => {
   let currentEffect = 'none';
 
   const onInputComments = () => {
@@ -53,8 +55,8 @@ const validationUserForm = (callback) => {
   handlers.push(() => commentInput.removeEventListener('input', onInputComments));
 
   const onInputHashTags = () => {
-    const heshTags = hashCodeTemplate.exec(hashTagsInput.value); // Массив строк ввода пользователя соответствующих шаблону регулярного выражения
-    let userInputs = hashTagsInput.value.split(' '); // Массив строк ввода пользователя
+    const heshTags = hashCodeTemplate.exec(hashTagsInput.value.toLowerCase()); // Массив строк ввода пользователя соответствующих шаблону регулярного выражения
+    let userInputs = hashTagsInput.value.toLowerCase().split(' '); // Массив строк ввода пользователя
     const heshTagsSet = new Set(heshTags); // Массив уникальных строк соответствующих шаблону регулярного выражения
     const userInputsSet = new Set(userInputs); // Массив уникальных строк ввода пользователя
 
@@ -69,7 +71,7 @@ const validationUserForm = (callback) => {
         hashTagsInput.setCustomValidity('Не верный формат хеш-тега');
       } else if (userInputsSet.size !== userInputs.length) {
         hashTagsInput.setCustomValidity('Повторяться нельзя');
-      } else if (userInputs.length > 5) {
+      } else if (userInputs.length > MAX_HESH_TAG_NUMBER) {
         hashTagsInput.setCustomValidity('Больше 5 нельзя');
       }
       else {
@@ -156,7 +158,7 @@ const validationUserForm = (callback) => {
   const onResetUserForm = (evt) => {
     if (!document.activeElement.classList.contains('text__hashtags') && !document.activeElement.classList.contains('text__description') && (evt.key === 'Escape' || evt.type === 'click')) {
       setDefaulParameters();
-      deactivationUserForm();
+      deactivateUserForm();
     }
   }; // OK
   buttonReset.addEventListener('click', onResetUserForm);
@@ -184,15 +186,15 @@ const validationUserForm = (callback) => {
   setDefaultEffectIntensity();
 };
 
-const activationUserForm = (callback) => {
+const activateUserForm = (callback) => {
   imgUplodOverlay.classList.remove('hidden');
   htmlBody.classList.add('modal-open');
   imgUploadPreview.src =  window.URL.createObjectURL(imgUploadInput.files[0]);
   callback();
 }; //OK
 
-const loadingNewUserPhoto = (callback) => {
+const loadNewUserPhoto = (callback) => {
   imgUploadInput.addEventListener('input', callback);
 };
 
-export { loadingNewUserPhoto, activationUserForm, validationUserForm, setDefaulParameters, deactivationUserForm};
+export { loadNewUserPhoto, activateUserForm, validateUserForm, setDefaulParameters, deactivateUserForm};
